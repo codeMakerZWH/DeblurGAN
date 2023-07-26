@@ -5,9 +5,10 @@ import cv2
 import argparse
 
 parser = argparse.ArgumentParser('create image pairs')
-parser.add_argument('--fold_A', dest='fold_A', help='input directory for image A', type=str, default='../dataset/50kshoes_edges')
-parser.add_argument('--fold_B', dest='fold_B', help='input directory for image B', type=str, default='../dataset/50kshoes_jpg')
-parser.add_argument('--fold_AB', dest='fold_AB', help='output directory', type=str, default='../dataset/carton_AB')
+parser.add_argument('--fold_A', dest='fold_A', help='input directory for image A', type=str, default=r'E:\DataSet\OT_cut\STL\deblurgan\blur')
+parser.add_argument('--fold_B', dest='fold_B', help='input directory for image B', type=str, default=r'E:\DataSet\OT_cut\STL\deblurgan\sharp')
+parser.add_argument('--fold_AB', dest='fold_AB', help='output directory', type=str, default='../dataset/ceshi_AB')
+parser.add_argument('--size', dest='size', help='image size to resize ', type=str, default=256)
 parser.add_argument('--num_imgs', dest='num_imgs', help='number of images',type=int, default=1000000)
 parser.add_argument('--use_AB', dest='use_AB', help='if true: (0001_A, 0001_B) to (0001_AB)',action='store_true')
 args = parser.parse_args()
@@ -16,6 +17,8 @@ for arg in vars(args):
     print('[%s] = ' % arg,  getattr(args, arg))
 
 splits = os.listdir(args.fold_A)
+
+
 
 for sp in splits:
     img_fold_A = os.path.join(args.fold_A, sp)
@@ -44,8 +47,10 @@ for sp in splits:
                 name_AB = name_AB.replace('_A.', '.') # remove _A
             path_AB = os.path.join(img_fold_AB, name_AB)
             im_A = cv2.imread(path_A, cv2.IMREAD_COLOR)
-            #resize im_A to 256x256
-            im_A = cv2.resize(im_A, (256, 256))
+            #resize im_A
+            im_A = cv2.resize(im_A, (args.size, args.size))
             im_B = cv2.imread(path_B, cv2.IMREAD_COLOR)
+            # resize im_B
+            im_B = cv2.resize(im_B, (args.size, args.size))
             im_AB = np.concatenate([im_A, im_B], 1)
             cv2.imwrite(path_AB, im_AB)
