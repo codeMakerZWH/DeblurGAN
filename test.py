@@ -18,7 +18,7 @@ from skimage.metrics import structural_similarity as compare_ssim
 
 
 opt = TestOptions().parse()
-opt.nThreads = 1   # test code only supports nThreads = 1
+opt.nThreads = 2   # test code only supports nThreads = 1
 opt.batchSize = 1  # test code only supports batchSize = 1
 opt.serial_batches = True  # no shuffle
 opt.no_flip = True  # no flip
@@ -28,9 +28,14 @@ opt.dataroot = r'E:\Python porject\DeblurGAN-master\dataset\carton_AB\valid'
 opt.model = 'test'
 opt.dataset_mode = 'single'
 opt.learn_residual = True
-opt.which_model_netG = "unet_256"
+opt.which_model_netG = "unet_128"
+opt.fineSize = 128
 opt.resize_or_crop = "none"
-
+opt.gan_type = "lsgan"
+opt.which_model_netG = "unet_128"
+opt.which_epoch = "200"
+opt.model = 'pix2pix'
+opt.name = f"STL_{opt.gan_type}_{opt.which_model_netG}"
 
 
 
@@ -56,8 +61,9 @@ def test():
 		# model.show_current_visuals()
 		visuals = model.get_current_visuals()
 
-
-
+		if opt.name.split('_')[0] == 'STL':
+			visuals['fake_B'] = visuals['Restored_Train']
+			visuals['GT'] = visuals['Sharp_Train']
 
 		avgPSNR += compare_psnr(visuals['fake_B'], visuals['GT'])
 		avgSSIM += compare_ssim(visuals['fake_B'], visuals['GT'], multichannel=True)
